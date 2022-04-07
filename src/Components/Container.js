@@ -55,24 +55,28 @@ const Main = () => (
        </p>
        <br/>
        <p id="account-address">Your account address is {props.yourAddress} </p>
+       <br/>
+       <button type="button"
+	  	   onClick={props.getEvents}
+	       className="btn btn-primary btn-lg">
+	       Get events
+	  </button>
 	</div>
-
  )
 
 
   return (
     <div className="container">
-        <div className="raw">
-          <div className="col-lg-9"></div>
-            <br/>
-            <br/>
-            <div id="content" className="text-center">
-            	 {props.isLoading ? <Loader/> : <Main/> }
-             </div>
-          </div>
-        </div>
-
-  );
+    <div className="raw">
+      <div className="col-lg-9"></div>
+        <br/>
+        <br/>
+        <div id="content" className="text-center">
+        	 {props.isLoading ? <Loader/> : <Main/> }
+         </div>
+      </div>
+    </div>
+   );
 
 }
 
