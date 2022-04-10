@@ -13,7 +13,7 @@ function App() {
  const [isLoading, setIsLoading] = useState(true);
  const [tokenPrice, setTokenPrice] = useState("");
  const [tokensSold, setTokensSold] = useState("");
- const [tokensAvailable, setTokensAvailable] = useState("750000");
+ const [tokensAvailable, setTokensAvailable] = useState("");
  const [progressPercent, setProgressPercent] = useState("");
  const [yourBalance, setYourBalance] = useState("0");
  const [numberOfTokensToBuy, setNumberOfTokensToBuy] = useState("0");
@@ -53,7 +53,6 @@ function App() {
         value : web3.utils.toWei(String(countedValue)),
         gas : 500000
       })
-
     }
  }
 
@@ -131,8 +130,11 @@ function App() {
     console.log("Network: ", networkId);
 
     const tokenSaleData = TokenSale.networks[networkId];
+    let tokenSold;
+    let tokenSaleContractAdr;
     if(tokenSaleData) {
         const tokenSaleAddress = tokenSaleData.address;
+        tokenSaleContractAdr = tokenSaleAddress;
         console.log("TokenSale Address", tokenSaleAddress);
         
         const tokenSaleContract = await new web3.eth.Contract(TokenSale.abi, tokenSaleAddress);
@@ -141,15 +143,11 @@ function App() {
         let tokenPiceInEth =  await web3.utils.fromWei(tokenPricenWei, "Ether");
         setTokenPrice(tokenPiceInEth);
 
-        let tokenSold = await tokenSaleContract.methods.tokensSold().call();
+        tokenSold = await tokenSaleContract.methods.tokensSold().call();
         setTokensSold(tokenSold);
 
-        let progressPercent = (Math.ceil(tokensSold) / tokensAvailable) * 100;
-        setProgressPercent(progressPercent);
-        listenEvents(tokenSaleContract);
-
+        
     }
-
     const tokenData = Token.networks[networkId];
     if(tokenData) {
         let tokenAddress = tokenData.address;
@@ -161,6 +159,14 @@ function App() {
                                         userAccount).call();
         console.log("Balance", balanceWei);
         setYourBalance(balanceWei);
+
+        var tokensAvailable = await tokenContract.methods.balanceOf(tokenSaleContractAdr).call();
+        console.log("TokensAvailable", tokensAvailable);
+        setTokensAvailable(tokensAvailable);
+
+        let progressPercent = (Math.ceil(tokensSold) / tokensAvailable) * 100;
+        setProgressPercent(progressPercent);
+        listenEvents(tokenSaleContract);
     }
   }
 
